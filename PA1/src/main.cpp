@@ -42,51 +42,39 @@ int main(int argc, char** argv) {
     for (auto& it: r2o) {
         const pair<int, int>& redund_via = it.first;
         vector<pair<int, int>>& original_vias = it.second;
-        for (auto& via: original_vias) {
+        for (auto& via: original_vias) 
             o2r[via].push_back(redund_via);
-        }
     }
-
     // Optimize iteratively until opt_count < opt_thres    
     int opt_count = 0;
-    int opt_thres = ov.size() / 20;
+    int opt_thres = 0; //ov.size() / 200;
+    int iter[5] = {0, 32, 1, 1, 1};
     do {
         opt_count = 0;
-        // Add isolated redundant vias to answer
-        // if original_vias.size() == 0 then redund_via is isolated
-        for (int i=0; i<3; i++)
-            for (auto& it: r2o) {
-                const pair<int, int>& redund_via = it.first;
-                vector<pair<int, int>>& original_vias = it.second;
-                if (original_vias.size() == 1) {
-                    opt_count += 1;
-                    result[redund_via] = original_vias[0];
-                    for (auto &via: o2r[original_vias[0]]) {
-                        vector<pair<int, int>>& v = r2o[via];
-                        v.erase(remove(v.begin(), v.end(), original_vias[0]), v.end());
+        for (int i=1; i<=4; i++)
+            for (int j=0; j<iter[i]; j++)
+                for (auto& it: r2o) {
+                    const pair<int, int>& redund_via = it.first;
+                    vector<pair<int, int>>& original_vias = it.second;
+                    if (original_vias.size() == i) {
+                        opt_count += 1;
+                        pair<int, int> original_via = original_vias[0];
+                        for (int k=0; k<original_vias.size(); k++) 
+                            if (o2r[original_vias[k]].size() < o2r[original_via].size())
+                                original_via = original_vias[k];
+                        result[redund_via] = original_via;
+                        for (auto& via: o2r[original_via])
+                            if (via != redund_via) {
+                                vector<pair<int, int>>& v = r2o[via];
+                                v.erase(remove(v.begin(), v.end(), original_via), v.end());
+                            }
+                        original_vias.clear();
                     }
-                    original_vias.clear();
                 }
-            }
-        // 2+ shared redundant vias
-        for (int i=0; i<1; i++)
-            for (auto& it: r2o) {
-                const pair<int, int>& redund_via = it.first;
-                vector<pair<int, int>>& original_vias = it.second;
-                if (original_vias.size() >= 2) {
-                    opt_count += 1;
-                    int rand_id = rand() % original_vias.size();
-                    result[redund_via] = original_vias[rand_id];
-                    for (auto &via: o2r[original_vias[rand_id]]) {
-                        vector<pair<int, int>>& v = r2o[via];
-                        v.erase(remove(v.begin(), v.end(), original_vias[0]), v.end());
-                    }
-                    original_vias.clear();
-                }
-            }
     } while (opt_count > opt_thres);
 
     map<pair<int, int>, int> answer;
+    cout << "# Objective value = " << result.size() << endl;
     fout << "# Objective value = " << result.size() << endl;
     
     for (auto& it: result) {
