@@ -9,12 +9,12 @@
 #include <cstdio>
 using namespace std;
 
-int main(int argc, char** argv) {
+int main (int argc, char** argv) {
     assert(argc == 3);
     ifstream fin(argv[1]);
     ofstream fout(argv[2]);
 
-    int via_count, x, y;
+    int via_count;
     int dx[5] = {0, 0, 1, 0, -1};
     int dy[5] = {0, 1, 0, -1, 0};
 
@@ -27,6 +27,7 @@ int main(int argc, char** argv) {
     fin >> via_count;
     // build map (redundant -> original)
     for (int i=0; i<via_count; i++) {
+        int x, y;
         fin >> x >> y;
         ov.push_back(make_pair(x, y));
         ovs.insert(make_pair(x, y));
