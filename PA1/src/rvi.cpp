@@ -104,7 +104,7 @@ int main (int argc, char** argv) {
             fout << " <= 1\n";
         }
     }
-    fout << "Bonuds\n";
+    fout << "Bounds\n";
     fout << "Binary\n";
     for (auto& it: o2r) {
         const pair<int, int>& original_via = it.first;
