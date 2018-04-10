@@ -9,3 +9,8 @@ To compile rvi.cpp, run:
 g++ -O3 -std=c++11 rvi.cpp -o rvi
 ```
 
+# Execute
+```
+./rvi [test*.in] [test*.lp]
+```
+
